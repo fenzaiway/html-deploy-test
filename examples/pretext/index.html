@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretext — Async HTTP Framework Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1c2333;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-dim: #8b949e;
+            --green: #3fb950;
+            --blue: #58a6ff;
+            --purple: #bc8cff;
+            --orange: #f0883e;
+            --red: #f85149;
+            --cyan: #39d2c0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+        header {
+            text-align: center;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        header h1 span { color: var(--green); }
+        header p { color: var(--text-dim); font-size: 0.95rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        .badge-new { background: rgba(63,185,80,0.15); color: var(--green); }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2::before {
+            content: '▸';
+            color: var(--green);
+        }
+
+        .code-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        .code-block .kw { color: var(--purple); }
+        .code-block .fn { color: var(--blue); }
+        .code-block .str { color: #a5d6ff; }
+        .code-block .dec { color: var(--green); }
+        .code-block .cm { color: var(--text-dim); font-style: italic; }
+        .code-block .num { color: var(--orange); }
+        .code-block .cls { color: var(--cyan); }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 0.85rem;
+        }
+        .feature h3 {
+            font-size: 0.9rem;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+        .feature p { color: var(--text-dim); font-size: 0.8rem; line-height: 1.4; }
+
+        .output {
+            background: #0a0e14;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 24px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+        .output .ok { color: var(--green); }
+        .output .info { color: var(--blue); }
+        .output .warn { color: var(--orange); }
+
+        .back {
+            display: inline-block;
+            margin-top: 48px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            background: rgba(167,139,250,0.12);
+            color: #a78bfa;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid rgba(167,139,250,0.2);
+        }
+        .back:hover { background: rgba(167,139,250,0.22); }
+
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span>⚡</span> Pretext <span class="badge badge-new">Demo</span></h1>
+            <p>Python 异步 HTTP 客户端框架 — 简洁 API + 高性能</p>
+        </header>
+
+        <h2>核心特性</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>🚀 Async-First</h3>
+                <p>基于 asyncio 构建，天然支持异步编程模型</p>
+            </div>
+            <div class="feature">
+                <h3>📦 简洁 API</h3>
+                <p>类似 requests 的直观接口，学习成本极低</p>
+            </div>
+            <div class="feature">
+                <h3>🔗 中间件链</h3>
+                <p>支持请求/响应中间件，轻松扩展功能</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ 连接池</h3>
+                <p>自动管理 HTTP 连接复用，高性能</p>
+            </div>
+        </div>
+
+        <h2>快速开始</h2>
+        <div class="code-block">
+<span class="kw">import</span> asyncio<br>
+<span class="kw">from</span> pretext <span class="kw">import</span> <span class="cls">Client</span><br><br>
+<span class="kw">async def</span> <span class="fn">main</span>():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">async with</span> <span class="cls">Client</span>() <span class="kw">as</span> client:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 发送 GET 请求</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resp = <span class="kw">await</span> client.<span class="fn">get</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"https://api.github.com/repos/python/cpython"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers={<span class="str">"Accept"</span>: <span class="str">"application/vnd.github+json"</span>}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(resp.status_code)&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 200</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(resp.json()[<span class="str">"stargazers_count"</span>])<br><br>
+asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+        </div>
+
+        <h2>中间件示例</h2>
+        <div class="code-block">
+<span class="kw">from</span> pretext <span class="kw">import</span> <span class="cls">Client</span>, <span class="cls">Request</span>, <span class="cls">Response</span><br><br>
+<span class="kw">async def</span> <span class="fn">retry_middleware</span>(req, next_fn):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"""请求失败自动重试 3 次"""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resp = <span class="kw">await</span> <span class="fn">next_fn</span>(req)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> resp.status_code &lt; <span class="num">500</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> resp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"Retry {attempt+1}/3..."</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> resp<br><br>
+<span class="kw">async def</span> <span class="fn">main</span>():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">async with</span> <span class="cls">Client</span>(middleware=[<span class="fn">retry_middleware</span>]) <span class="kw">as</span> c:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resp = <span class="kw">await</span> c.<span class="fn">get</span>(<span class="str">"https://flaky-api.example.com/data"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(resp.text)
+        </div>
+
+        <h2>运行输出</h2>
+        <div class="output">
+<span class="info">$</span> python demo.py<br>
+<span class="ok">✓</span> GET https://api.github.com/repos/python/cpython → <span class="ok">200 OK</span> (142ms)<br>
+<span class="info">stargazers_count:</span> 62847<br>
+<span class="info">language:</span> Python<br>
+<span class="warn">⚡ Connection reused from pool</span><br>
+<span class="info">$</span> python middleware_demo.py<br>
+<span class="warn">Retry 1/3...</span><br>
+<span class="warn">Retry 2/3...</span><br>
+<span class="ok">✓</span> GET https://flaky-api.example.com/data → <span class="ok">200 OK</span> (847ms)
+        </div>
+
+        <a class="back" href="../../index.html">← 返回 Demo Hub</a>
+
+        <footer>
+            Pretext Demo · Python Async HTTP · <a href="https://github.com/pretext-framework/pretext" style="color: var(--blue);">GitHub</a>
+        </footer>
+    </div>
+</body>
+</html>
