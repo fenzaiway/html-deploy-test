@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>喜茶GO · 全流程高保真茶饮系统 | 灵感之茶</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #F5F3F0;
+            font-family: 'Inter', sans-serif;
+            color: #2E241F;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #E8E3DD; }
+        ::-webkit-scrollbar-thumb { background: #BFA98E; border-radius: 8px; }
+        .app-container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.03);
+        }
+        /* 公用头部 */
+        .status-bar {
+            padding: 14px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            background: #FFFFFF;
+            border-bottom: 1px solid #F0EBE5;
+        }
+        .brand-header {
+            padding: 8px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: #FFFFFF;
+        }
+        .logo-area h1 {
+            font-size: 26px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #2E241F 0%, #8B6B4F 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .logo-area p { font-size: 12px; color: #A48F7A; }
+        .action-icons i { font-size: 22px; margin-left: 18px; color: #3F2E24; }
+        /* 页面容器 + 底部导航 */
+        .page { display: none; padding-bottom: 85px; }
+        .page.active { display: block; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 450px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #EFE9E3;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 22px;
+            z-index: 30;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #9B8A7A;
+            cursor: pointer;
+        }
+        .nav-item i { font-size: 22px; }
+        .nav-item.active { color: #2E241F; font-weight: 500; }
+        /* 购物车悬浮条 */
+        .cart-float {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            max-width: 450px;
+            margin: 0 auto;
+            background: #2E241F;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 60px;
+            width: calc(100% - 32px);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            z-index: 25;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            font-weight: 600;
+        }
+        .cart-badge-mini {
+            background: #D85A3A;
+            border-radius: 30px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        /* 首页组件 */
+        .banner-slider {
+            margin: 8px 20px 20px;
+            border-radius: 32px;
+            background: #F0EAE2;
+            overflow: hidden;
+        }
+        .banner-img { padding: 32px 24px; text-align: center; font-size: 44px; }
+        .banner-dots { display: flex; justify-content: center; gap: 8px; padding: 12px; }
+        .dot { width: 6px; height: 6px; border-radius: 3px; background: #DDD5CC; }
+        .dot.active { width: 20px; background: #2E241F; }
+        .purchase-options { display: flex; gap: 16px; padding: 8px 20px 24px; }
+        .purchase-card {
+            flex: 1;
+            background: #F8F5F1;
+            border-radius: 24px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .section-title { padding: 8px 20px 12px; font-weight: 700; font-size: 18px; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 8px 20px 24px;
+        }
+        .product-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            border: 1px solid #F2ECE6;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .product-card:active { transform: scale(0.98); }
+        .card-img { padding: 20px; text-align: center; font-size: 48px; background: #F9F5F0; }
+        .card-info { padding: 0 12px 16px; }
+        .product-title { font-weight: 700; font-size: 16px; }
+        .product-desc { font-size: 11px; color: #AB9A89; margin: 4px 0 8px; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-weight: 800; font-size: 18px; }
+        .add-btn {
+            background: #2E241F;
+            width: 32px;
+            height: 32px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        /* 点单页分类 */
+        .store-selector {
+            background: #F8F5F1;
+            margin: 8px 20px 16px;
+            border-radius: 20px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .category-scroll {
+            display: flex;
+            gap: 24px;
+            padding: 0 20px 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .cat-chip {
+            font-size: 15px;
+            font-weight: 500;
+            color: #9B8A7A;
+            padding-bottom: 6px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .cat-chip.active { color: #2E241F; border-bottom-color: #2E241F; font-weight: 700; }
+        /* 模态框（商品定制） */
+        .modal-mask {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-mask.active { visibility: visible; opacity: 1; }
+        .modal-container {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 32px 32px 0 0;
+            padding: 28px 24px 32px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .modal-mask.active .modal-container { transform: translateY(0); }
+        .opt-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .opt-btn {
+            background: #F5F0EB;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-size: 14px;
+        }
+        .opt-btn.selected { background: #2E241F; color: white; }
+        .qty-control {
+            display: flex;
+            justify-content: space-between;
+            background: #F8F5F1;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin: 16px 0 24px;
+        }
+        .qty-buttons { display: flex; gap: 24px; align-items: center; }
+        .qty-btn {
+            background: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 36px;
+            border: none;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-add {
+            background: #2E241F;
+            width: 100%;
+            padding: 16px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            border: none;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2E241F;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            z-index: 200;
+            opacity: 0;
+            transition: 0.2s;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; }
+        /* 订单详情页 */
+        .order-detail-card {
+            background: #FFFFFF;
+            margin: 16px 20px;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid #F0EBE5;
+        }
+        .track-progress {
+            background: #F8F5F1;
+            border-radius: 32px;
+            padding: 28px 24px;
+            margin: 20px;
+        }
+        .progress-bar { background: #E0D6CC; border-radius: 20px; height: 6px; margin: 20px 0; }
+        .progress-fill { width: 65%; height: 6px; background: #2E241F; border-radius: 20px; }
+        /* 个人设置/商城页面 */
+        .settings-list, .shop-list {
+            padding: 0 20px;
+        }
+        .setting-item, .shop-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 0;
+            border-bottom: 1px solid #F0EBE5;
+            cursor: pointer;
+        }
+        .member-card {
+            background: linear-gradient(135deg, #2E241F, #5C4433);
+            margin: 20px;
+            border-radius: 32px;
+            padding: 28px 24px;
+            color: white;
+        }
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #F0EBE5;
+        }
+        .empty-cart { text-align: center; padding: 60px 20px; color: #AB9A89; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="status-bar"><span>9:41</span><span><i class="fas fa-signal"></i> <i class="fas fa-battery-full"></i></span></div>
+    <div class="brand-header">
+        <div class="logo-area"><h1>喜茶 GO</h1><p>灵感之茶 · 此刻即享</p></div>
+        <div class="action-icons"><i class="far fa-heart"></i><i class="far fa-user"></i></div>
+    </div>
+
+    <!-- 首页 -->
+    <div id="homePage" class="page active">
+        <div class="banner-slider"><div class="banner-img"><i class="fas fa-leaf"></i> 雪山思乡龙井 · 春日限定</div><div class="banner-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div></div>
+        <div class="purchase-options">
+            <div class="purchase-card" data-nav="orderPage"><i class="fas fa-store"></i><div>门店自取</div><small>免排队</small></div>
+            <div class="purchase-card" data-nav="orderPage"><i class="fas fa-truck"></i><div>外卖配送</div><small>30分钟达</small></div>
+            <div class="purchase-card"><i class="fas fa-users"></i><div>一起喝</div><small>拼单优惠</small></div>
+        </div>
+        <div class="section-title">🔥 人气必喝榜 · 今日推荐</div>
+        <div class="menu-grid" id="homeMenuGrid"></div>
+    </div>
+
+    <!-- 点单页 -->
+    <div id="orderPage" class="page">
+        <div class="store-selector"><span><i class="fas fa-location-dot"></i> 喜茶·万象城灵感店</span><span>等待 5杯 <i class="fas fa-chevron-down"></i></span></div>
+        <div class="category-scroll" id="orderCategories">
+            <span class="cat-chip active" data-cat="all">全部饮品</span>
+            <span class="cat-chip" data-cat="fruit">果茶系列</span>
+            <span class="cat-chip" data-cat="milk">轻乳茶</span>
+            <span class="cat-chip" data-cat="special">灵感限定</span>
+        </div>
+        <div class="menu-grid" id="orderMenuGrid"></div>
+    </div>
+
+    <!-- 订单页面（整合订单列表 + 订单详情） -->
+    <div id="orderListPage" class="page">
+        <div style="padding: 12px 20px; font-weight: 600; font-size: 18px;">📋 我的订单</div>
+        <div id="ordersContainer" style="padding: 0 16px 20px;"></div>
+    </div>
+    <!-- 订单详情子视图（动态） -->
+    <div id="orderDetailPage" class="page">
+        <div style="padding: 12px 20px; display: flex; align-items: center; gap: 12px;"><i class="fas fa-arrow-left" style="font-size: 20px; cursor: pointer;" id="backToOrderList"></i><span style="font-weight: 600;">订单详情</span></div>
+        <div id="orderDetailContent"></div>
+    </div>
+
+    <!-- 我的页面（个人设置/商城入口） -->
+    <div id="profilePage" class="page">
+        <div class="member-card">
+            <div><i class="far fa-user-circle" style="font-size: 52px;"></i></div>
+            <div style="font-weight: 700; font-size: 20px; margin-top: 8px;">茶茶同学</div>
+            <div>黑卡贵宾 · 积分 3820</div>
+            <div style="display: flex; gap: 20px; margin-top: 20px;"><span>🎂 生日券</span><span>🎫 满减券x3</span></div>
+        </div>
+        <div class="settings-list">
+            <div class="setting-item" data-subpage="myOrders"><span>📦 我的订单</span><span>查看全部 &gt;</span></div>
+            <div class="setting-item" data-subpage="shopPage"><span>🛍️ 喜茶商城</span><span>积分兑好礼 &gt;</span></div>
+            <div class="setting-item" data-subpage="settingsPage"><span>⚙️ 个人设置</span><span>&gt;</span></div>
+            <div class="setting-item" data-subpage="cartDetail"><span>🛒 购物车详情</span><span>查看 &gt;</span></div>
+        </div>
+    </div>
+
+    <!-- 商城页面 -->
+    <div id="shopPage" class="page">
+        <div style="padding: 12px 20px; display: flex; align-items: center; gap: 12px;"><i class="fas fa-arrow-left" style="font-size: 20px; cursor: pointer;" id="backFromShop"></i><span style="font-weight: 600;">喜茶百货</span></div>
+        <div style="padding: 20px;"><div class="shop-item"><span>🥤 灵感马克杯</span><span>1999积分</span></div><div class="shop-item"><span>🍃 龙井茶包礼盒</span><span>3500积分</span></div><div class="shop-item"><span>🎁 限定随行杯</span><span>2499积分</span></div><div class="shop-item"><span>✨ 喜茶星球卡</span><span>¥39.9</span></div></div>
+    </div>
+
+    <!-- 个人设置页面 -->
+    <div id="settingsPage" class="page">
+        <div style="padding: 12px 20px; display: flex; align-items: center; gap: 12px;"><i class="fas fa-arrow-left" style="font-size: 20px; cursor: pointer;" id="backFromSettings"></i><span style="font-weight: 600;">账号设置</span></div>
+        <div class="settings-list"><div class="setting-item">昵称：茶茶同学</div><div class="setting-item">手机号：138****8888</div><div class="setting-item">收货地址：灵感市茶饮路1号</div><div class="setting-item">注销账号</div></div>
+    </div>
+
+    <!-- 购物车详情独立页面 -->
+    <div id="cartDetail" class="page">
+        <div style="padding: 12px 20px; display: flex; align-items: center; gap: 12px;"><i class="fas fa-arrow-left" style="font-size: 20px; cursor: pointer;" id="backFromCartDetail"></i><span style="font-weight: 600;">购物车</span></div>
+        <div id="cartDetailList" style="padding: 0 20px;"></div>
+        <div style="padding: 20px; border-top: 1px solid #EFE9E3; margin-top: 20px;"><button id="checkoutFromDetail" style="background:#2E241F; color:white; width:100%; padding:16px; border-radius:60px; border:none; font-weight:700;">去结算</button></div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" data-page="homePage"><i class="fas fa-home"></i><span>首页</span></div>
+        <div class="nav-item" data-page="orderPage"><i class="fas fa-mug-hot"></i><span>点单</span></div>
+        <div class="nav-item" data-page="orderListPage"><i class="fas fa-clipboard-list"></i><span>订单</span></div>
+        <div class="nav-item" data-page="profilePage"><i class="fas fa-user"></i><span>我的</span></div>
+    </div>
+
+    <!-- 购物车悬浮条 -->
+    <div class="cart-float" id="cartFloatBtn"><span><i class="fas fa-bag-shopping"></i> 购物车 <span id="cartItemCount" class="cart-badge-mini">0</span></span><span>¥ <span id="cartTotalPrice">0.00</span></span></div>
+
+    <!-- 商品定制模态框 -->
+    <div class="modal-mask" id="productModal"><div class="modal-container"><div style="display:flex; justify-content:space-between;"><span style="font-weight:800; font-size:22px;" id="modalProductName">芝芝莓莓</span><span id="closeModalBtn" style="font-size:32px; cursor:pointer;">&times;</span></div>
+        <div class="option-group"><div class="option-title">甜度</div><div class="opt-buttons" id="sugarGroup"><button class="opt-btn" data-sugar="少少甜">少少甜</button><button class="opt-btn selected" data-sugar="少甜">少甜</button><button class="opt-btn" data-sugar="正常甜">正常甜</button></div></div>
+        <div class="option-group"><div class="option-title">温度</div><div class="opt-buttons" id="tempGroup"><button class="opt-btn" data-temp="去冰">去冰</button><button class="opt-btn selected" data-temp="少冰">少冰</button><button class="opt-btn" data-temp="标准冰">标准冰</button></div></div>
+        <div class="qty-control"><span>数量</span><div class="qty-buttons"><button class="qty-btn" id="modalQtyMinus">−</button><span id="modalQtyNum" style="min-width:32px; text-align:center;">1</span><button class="qty-btn" id="modalQtyPlus">+</button></div></div>
+        <button class="modal-add" id="confirmAddToCartBtn"><span>加入购物车</span><span>¥ <span id="modalDynamicPrice">0.00</span></span></button>
+    </div></div>
+    <div class="toast-msg" id="globalToast">已加入购物车</div>
+</div>
+
+<script>
+    const productsDB = [
+        { id:1, name:"芝芝莓莓", desc:"新鲜草莓·芝士", price:32, category:"fruit", icon:"🍓" },
+        { id:2, name:"多肉葡萄", desc:"巨峰葡萄脆波波", price:33, category:"fruit", icon:"🍇" },
+        { id:3, name:"雪山思乡龙井", desc:"龙井茶底雪顶", price:29, category:"special", icon:"🍵" },
+        { id:4, name:"轻乳嫣红", desc:"红茶牛乳", price:25, category:"milk", icon:"🥛" },
+        { id:5, name:"椰椰芒芒", desc:"芒果生打椰", price:28, category:"fruit", icon:"🥭" },
+        { id:6, name:"水牛乳双拼", desc:"水牛乳黑糖冻", price:27, category:"milk", icon:"🧋" },
+        { id:7, name:"超厚芋泥", desc:"手捣芋泥牛乳茶", price:31, category:"milk", icon:"🍠" },
+        { id:8, name:"酷黑桑葚", desc:"当季桑葚爆汁", price:34, category:"special", icon:"🖤" }
+    ];
+    let cart = []; // { id, name, price, quantity, sugar, temp }
+    let currentOrderCat = "all";
+    let currentSelectedProduct = null, currentSugar = "少甜", currentTemp = "少冰", currentQty = 1;
+    let orders = []; // 已下单记录
+
+    // DOM 辅助
+    function renderProducts(container, list) {
+        if(!container) return;
+        container.innerHTML = list.map(p => `<div class="product-card" data-id="${p.id}"><div class="card-img">${p.icon}</div><div class="card-info"><div class="product-title">${p.name}</div><div class="product-desc">${p.desc}</div><div class="price-row"><span class="price">¥${p.price}</span><button class="add-btn" data-id="${p.id}">+</button></div></div></div>`).join('');
+        container.querySelectorAll('.add-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); const prod = productsDB.find(p => p.id == btn.dataset.id); if(prod) openModal(prod); }));
+        container.querySelectorAll('.product-card').forEach(card => card.addEventListener('click', () => { const prod = productsDB.find(p => p.id == card.dataset.id); if(prod) openModal(prod); }));
+    }
+    function openModal(product) { currentSelectedProduct = product; document.getElementById('modalProductName').innerText = product.name; document.getElementById('modalDynamicPrice').innerText = product.price; currentQty=1; document.getElementById('modalQtyNum').innerText=1; resetOpts(); document.getElementById('productModal').classList.add('active'); }
+    function resetOpts() { currentSugar="少甜"; currentTemp="少冰"; document.querySelectorAll('#sugarGroup .opt-btn').forEach(b=>b.classList.toggle('selected', b.dataset.sugar===currentSugar)); document.querySelectorAll('#tempGroup .opt-btn').forEach(b=>b.classList.toggle('selected', b.dataset.temp===currentTemp)); }
+    function updateCartUI() { let total=0, cnt=0; cart.forEach(i=>{ total+=i.price*i.quantity; cnt+=i.quantity; }); document.getElementById('cartTotalPrice').innerText=total.toFixed(2); document.getElementById('cartItemCount').innerText=cnt; }
+    function addCurrentToCart() { if(!currentSelectedProduct) return; const existing = cart.find(i=>i.id===currentSelectedProduct.id && i.sugar===currentSugar && i.temp===currentTemp); if(existing) existing.quantity += currentQty; else cart.push({...currentSelectedProduct, quantity:currentQty, sugar:currentSugar, temp:currentTemp}); updateCartUI(); showToast(`已添加 ${currentSelectedProduct.name}`); closeModal(); }
+    function closeModal() { document.getElementById('productModal').classList.remove('active'); currentSelectedProduct=null; }
+    function showToast(msg) { const toast = document.getElementById('globalToast'); toast.innerText=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1500); }
+    function renderOrderList() { const container = document.getElementById('ordersContainer'); if(!container) return; if(orders.length===0) { container.innerHTML='<div class="empty-cart">暂无订单，去点单吧～</div>'; return; } container.innerHTML = orders.map((order,idx)=>`<div class="order-detail-card" data-orderidx="${idx}" style="margin-bottom:12px; cursor:pointer;"><div style="display:flex; justify-content:space-between;"><span>订单号: ${order.id}</span><span>¥${order.total}</span></div><div>${order.items.map(i=>`${i.name} x${i.quantity}`).join(', ')}</div><div style="font-size:12px; color:#A48F7A;">${order.status}</div></div>`).join(''); document.querySelectorAll('.order-detail-card').forEach(card=>card.addEventListener('click',(e)=>{ const idx=card.dataset.orderidx; showOrderDetail(orders[idx]); switchToPage('orderDetailPage'); })); }
+    function showOrderDetail(order) { const detailDiv = document.getElementById('orderDetailContent'); if(!detailDiv) return; detailDiv.innerHTML = `<div class="track-progress"><div><i class="fas fa-cup"></i> 订单状态：${order.status}</div><div class="progress-bar"><div class="progress-fill" style="width:${order.status==='已完成'?'100%':order.status==='制作中'?'60%':'20%'}"></div></div><div>预计${order.status==='已完成'?'可取餐':'制作中，请稍后'}</div><button class="share-status" id="shareTrackBtn" style="margin-top:20px;"><i class="fab fa-weixin"></i> 分享取茶状态</button></div><div class="order-detail-card" style="margin-top:16px;"><strong>商品清单</strong>${order.items.map(i=>`<div class="cart-item-row">${i.name} (${i.sugar}/${i.temp}) x${i.quantity} <span>¥${(i.price*i.quantity).toFixed(2)}</span></div>`).join('')}</div><div class="order-detail-card"><strong>取茶号：${order.pickupCode}</strong></div>`; document.getElementById('shareTrackBtn')?.addEventListener('click',()=>showToast('已分享微信状态')); }
+    function renderCartDetail() { const container = document.getElementById('cartDetailList'); if(!container) return; if(cart.length===0) { container.innerHTML='<div class="empty-cart">购物车空空如也，去加购吧～</div>'; return; } container.innerHTML = cart.map((item,idx)=>`<div class="cart-item-row"><div><strong>${item.name}</strong><div style="font-size:12px;">${item.sugar}/${item.temp}</div></div><div style="display:flex; align-items:center; gap:12px;"><button class="qty-btn" data-cartidx="${idx}" data-dir="minus" style="width:28px;height:28px;">-</button><span>${item.quantity}</span><button class="qty-btn" data-cartidx="${idx}" data-dir="plus" style="width:28px;height:28px;">+</button><span>¥${(item.price*item.quantity).toFixed(2)}</span></div></div>`).join(''); document.querySelectorAll('[data-cartidx]').forEach(btn=>{ btn.addEventListener('click',(e)=>{ const idx=parseInt(btn.dataset.cartidx); const dir=btn.dataset.dir; if(dir==='minus' && cart[idx].quantity>1) cart[idx].quantity--; else if(dir==='plus') cart[idx].quantity++; else if(dir==='minus' && cart[idx].quantity===1) cart.splice(idx,1); updateCartUI(); renderCartDetail(); }); }); }
+    function checkoutAction() { if(cart.length===0){ showToast('购物车是空的'); return; } const totalPrice = cart.reduce((s,i)=>s+i.price*i.quantity,0); const orderId = 'HE' + Date.now().toString().slice(-8); const newOrder = { id:orderId, items:cart.map(c=>({...c})), total:totalPrice, status:'制作中', pickupCode:Math.floor(Math.random()*900+100).toString() }; orders.unshift(newOrder); cart=[]; updateCartUI(); renderCartDetail(); renderOrderList(); showToast('下单成功，前往订单页查看'); switchToPage('orderListPage'); }
+    // 页面路由
+    function switchToPage(pageId) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId)?.classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n=>n.dataset.page===pageId); if(activeNav) activeNav.classList.add('active'); }
+    // 子页面返回
+    function initRouting() { document.querySelectorAll('.nav-item').forEach(nav=>nav.addEventListener('click',()=>switchToPage(nav.dataset.page))); document.querySelectorAll('.purchase-card[data-nav]').forEach(card=>card.addEventListener('click',()=>switchToPage(card.dataset.nav))); document.getElementById('backFromShop')?.addEventListener('click',()=>switchToPage('profilePage')); document.getElementById('backFromSettings')?.addEventListener('click',()=>switchToPage('profilePage')); document.getElementById('backFromCartDetail')?.addEventListener('click',()=>switchToPage('profilePage')); document.getElementById('backToOrderList')?.addEventListener('click',()=>switchToPage('orderListPage')); document.querySelectorAll('.setting-item[data-subpage]').forEach(item=>item.addEventListener('click',()=>{ const sub=item.dataset.subpage; if(sub==='myOrders') switchToPage('orderListPage'); else if(sub==='shopPage') switchToPage('shopPage'); else if(sub==='settingsPage') switchToPage('settingsPage'); else if(sub==='cartDetail'){ renderCartDetail(); switchToPage('cartDetail'); } })); document.getElementById('checkoutFromDetail')?.addEventListener('click',()=>{ if(cart.length===0) showToast('购物车为空'); else { checkoutAction(); switchToPage('orderListPage'); } }); document.getElementById('cartFloatBtn')?.addEventListener('click',()=>{ renderCartDetail(); switchToPage('cartDetail'); }); }
+    function initOrderCategory() { document.querySelectorAll('#orderCategories .cat-chip').forEach(chip=>{ chip.addEventListener('click',()=>{ document.querySelectorAll('#orderCategories .cat-chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); currentOrderCat=chip.dataset.cat; renderOrderPage(); }); }); }
+    function renderOrderPage() { let filtered = currentOrderCat==='all'? productsDB : productsDB.filter(p=>p.category===currentOrderCat); renderProducts(document.getElementById('orderMenuGrid'), filtered); }
+    function initModalEvents() { document.getElementById('closeModalBtn')?.addEventListener('click',closeModal); document.getElementById('productModal')?.addEventListener('click',(e)=>{if(e.target===document.getElementById('productModal')) closeModal();}); document.querySelectorAll('#sugarGroup .opt-btn').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#sugarGroup .opt-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); currentSugar=btn.dataset.sugar; })); document.querySelectorAll('#tempGroup .opt-btn').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#tempGroup .opt-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); currentTemp=btn.dataset.temp; })); document.getElementById('modalQtyMinus')?.addEventListener('click',()=>{if(currentQty>1){currentQty--; document.getElementById('modalQtyNum').innerText=currentQty;}});         document.getElementById('modalQtyPlus')?.addEventListener('click',()=>{currentQty++; document.getElementById('modalQtyNum').innerText=currentQty;});
+        document.getElementById('confirmAddToCartBtn')?.addEventListener('click',addCurrentToCart);
+    }
+    // 初始化首页&点单页商品
+    function init() {
+        renderProducts(document.getElementById('homeMenuGrid'), productsDB);
+        renderOrderPage();
+        initOrderCategory();
+        initModalEvents();
+        initRouting();
+        updateCartUI();
+        renderOrderList();
+        // 预置一条演示订单，让订单页不空（演示用）
+        if(orders.length===0){
+            orders.push({ id:'HE20240401', items:[{name:'芝芝莓莓',price:32,quantity:1,sugar:'少甜',temp:'少冰'}], total:32, status:'已完成', pickupCode:'A001' });
+            renderOrderList();
+        }
+    }
+    init();
+</script>
+</body>
+</html>
